@@ -1,0 +1,74 @@
+extends layout
+block content
+  script.
+  section#main
+    div(class="inner")
+      header
+        h2 基本狀態 
+        if (order.disabled)
+          h4 訂單狀態：[無效訂單] #{order.status}
+        else if (order.completed_at)
+          h4 訂單狀態：[已完成] #{order.status}
+        else
+          h4 訂單狀態：#{order.status}
+        p 訂單編號 #{order._id}
+        p 預購信箱：#{order.email}
+        p 預購電話：#{order.cellphone}
+        a(href="#{siteHost}/preorders/#{order.preorder_id}/view")
+          p 原預購網址：#{siteHost}/preorders/#{order.preorder_id}/view
+        p 建立時間：#{order.created_at.Format("yyyy-MM-dd hh:mm")}
+        //- if (order.shipping_expect_at)
+        //-  p 預定交付日：#{order.shipping_expect_at.Format("yyyy-MM-dd")}
+         if (order.completed_at)
+          p 訂單完成時間：#{order.completed_at.Format("yyyy-MM-dd hh:mm")}
+        p 選擇之取貨點：#{order.pickup_at}
+        if (order.tags)
+          p #{array2csv(order.tags)}
+        if (order.desc)
+          textarea
+            | #{order.desc}
+        br
+        //- 付款
+        p 訂單總金額 #{order.prize_total} NTD
+        p 選擇的付款方式 #{order.paid_method} 
+        //- TODO更換付款方式
+        if (!order.paid_checked_at)
+          textarea
+            | #{payment_msg[order.paid_method].replace("<order_id>",order._id).replace("<order_passwd>",order.passwd)}
+          a(href="#{siteHost}/orders/#{order._id}/report_ATM/#{order.passwd}")
+            | 若您已匯款，點此回報/更新匯款資料
+          if (order.paid_at)
+            p 回報已付款：#{order.paid_at.Format("yyyy-MM-dd hh:mm")}
+            p 付款紀錄：
+            div(style="border-width:2px;border-style:solid;border-color:#FFAC55;padding:5px;margin:3px;")
+              textarea
+                | #{order.paid_note}
+        if (order.paid_checked_at)
+          p 付款確認日：#{order.paid_checked_at.Format("yyyy-MM-dd hh:mm")}
+        if (order.shipped_at)
+          p 出貨/取貨日：#{order.shipped_at.Format("yyyy-MM-dd")}
+        //- note管理者附註 passwd buyer_id prize_products prize_shipping
+  section#products
+    div(class="inner")
+      header
+        h2 預購清單
+      div(style="border-width:2px;border-style:solid;border-color:#4286f4;padding:5px;margin:3px;")
+        for product in products
+          if (product.status=="ok" && product.shipped_at)
+            p #{product.product.title} #{product.count} #{product.product.unit} 已寄出 #{product.shipped_at}
+          else if (product.status=="ok")
+            p #{product.product.title} #{product.count} #{product.product.unit}
+          //- else if (product._id==orderprod.product_id && orderprod.status=="ok")   && orderprod.shipped_at!=undefined    #{product.shipped_at.Format("yyyy-MM-dd hh:mm")} 已寄出    && orderprod.status=="ok"
+          //-  p #{product.title} #{orderprod.count} #{product.unit} 
+  section#shipping_tag
+    div(class="inner")
+      header
+        h2 寄送標籤（若選擇郵寄才會用到）
+      div(style="border-width:2px;border-style:solid;border-color:#FFAC55;padding:5px;margin:3px;")
+        p #{order.shipping_zip} #{order.shipping_counrty}
+        p #{order.shipping_address}
+        if (nos(order.shipping_phone))
+          p #{order.shipping_name} #{order.cellphone}
+        else
+          p #{order.shipping_name} #{order.shipping_phone}
+        p #{order.shipping_note}

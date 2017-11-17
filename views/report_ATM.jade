@@ -1,0 +1,62 @@
+extends layout
+block content
+  script.
+  section#main
+    div(class="inner")
+      header
+        h2 已經匯款了嗎？
+        h4 來填寫一下匯款資料吧
+      p 預購編號： #{order.preorder_id}
+      p 訂單狀態： #{order.status}
+      p 建立時間： #{order.created_at.Format("yyyy-MM-dd hh:mm")}
+      p 過期時間： #{new Date(order.created_at.getTime()+expire_days*24*60*60*1000).Format("yyyy-MM-dd hh:mm")}
+      p 應付總金額： #{order.prize_total}
+  section#main
+    form(action='/orders/#{order._id}/report_ATM/#{order.passwd}', method="post")
+      div(class="inner")
+        div(style="border-width:2px;border-style:solid;border-color:#4286f4;padding:5px;margin:3px;")
+          div(class="field")
+            | 轉帳金額＊
+            input(type="text", name="total", id="total")
+          div(class="field")
+            | 轉入銀行代碼＊
+            input(type="text", name="bank_id", id="bank_id")
+          div(class="field")
+            | 轉入帳號後五碼＊
+            input(type="text", name="account_id", id="account_id")
+          div(class="field")
+            | 轉帳日期＊
+            input(type='text' id="datepicker_start" name="transfer_at_date")
+          div(class="field")
+            | 轉帳時間＊
+            select(id="transfer_at_time" name="transfer_at_time")
+              option(value="00:00~00:59") 00:00~00:59
+              option(value="01:00~01:59") 01:00~01:59
+              option(value="02:00~02:59") 02:00~02:59
+              option(value="03:00~03:59") 03:00~03:59
+              option(value="04:00~04:59") 04:00~04:59
+              option(value="05:00~05:59") 05:00~05:59
+              option(value="06:00~06:59") 06:00~06:59
+              option(value="07:00~07:59") 07:00~07:59
+              option(value="08:00~08:59") 08:00~08:59
+              option(value="09:00~09:59") 09:00~09:59
+              option(value="10:00~10:59") 10:00~10:59
+              option(value="11:00~11:59") 11:00~11:59
+              option(value="12:00~12:59", selected="selected") 12:00~12:59
+              option(value="13:00~13:59") 13:00~13:59
+              option(value="14:00~14:59") 14:00~14:59
+              option(value="15:00~15:59") 15:00~15:59
+              option(value="16:00~16:59") 16:00~16:59
+              option(value="17:00~17:59") 17:00~17:59
+              option(value="18:00~18:59") 18:00~18:59
+              option(value="19:00~19:59") 19:00~19:59
+              option(value="20:00~20:59") 20:00~20:59
+              option(value="21:00~21:59") 21:00~21:59
+              option(value="22:00~22:59") 22:00~22:59
+              option(value="23:00~23:59") 23:00~23:59
+          div(class="field")
+            | 附註
+            testbox(name="note", id="note")
+          ul(class="actions")
+            li
+              input(type="submit" value="→送出" class="alt")

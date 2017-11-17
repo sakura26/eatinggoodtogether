@@ -1,0 +1,12 @@
+//- {status:"error", msg:"preorder not found", redirect:undefined, redirect_time:-1}
+extends layout
+block content
+  section(id="one")
+    div(class="inner")
+      header
+        h2= status
+      p= msg
+      if (redirect==undefined)
+        a(href="javascript:history.back()") 回上頁
+      else
+        a(href="#{redirect}") 確認

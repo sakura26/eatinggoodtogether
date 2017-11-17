@@ -1,0 +1,160 @@
+extends layout
+block content
+  script.
+
+  if (status=='expired')
+    section#main
+      div(class="inner")
+        header
+          h2 此團購已結束
+          a(href="/") 來看看其他新的團購吧？
+          | 若您有參加團購想檢視訂單狀態，請從Email點擊訂單追蹤的連結～
+  else if (preorder.disable)
+    section#main
+      div(class="inner")
+        header
+          h2 此團購已取消
+          a(href="/") 來看看其他新的團購吧？
+          | 若您有參加團購想檢視訂單狀態，請從Email點擊訂單追蹤的連結～
+  else
+    section#main
+      div(class="inner")
+        header
+          h2= preorder.title
+          if (preorder.subtitle)
+            h4= preorder.subtitle
+          p 活動期間：#{preorder.start_at.Format("yyyy-MM-dd hh:mm")}～#{preorder.end_at.Format("yyyy-MM-dd hh:mm")}
+          if (preorder.shipping_expect_at)
+            p 預定交付日：#{preorder.shipping_expect_at.Format("yyyy-MM-dd")}
+          p 本次可能的取貨方式：#{array2csv(pickup)}
+          if (preorder.tags)
+            p #{array2csv(preorder.tags)}
+          if (preorder.desc)
+            p= preorder.desc
+          //-
+            short_desc, image_large, image_small, qr_code
+    form(action='/preorders/#{preorder._id}/order', method="post")
+      section#product_choose
+        div(class="inner")
+          header
+            h2 本次團購項目一覽
+          //- 產品
+          for product in products
+            div(style="border-width:2px;border-style:solid;border-color:#FFAC55;padding:5px;margin:3px;")
+              if (product.image_large && product.image_small)
+                a(href="#{product.image_large}") 
+                  img(src="#{product.image_small}", style="width:200px; float:left;")
+              else if(product.image_small)
+                img(src="#{product.image_small}", style="width:200px; float:left;")
+              else if(product.image_large)
+                img(src="#{product.image_large}", style="width:200px; float:left;")
+              else
+                img(src="https://static.pexels.com/photos/126407/pexels-photo-126407.jpeg", style="width:200px; float:left;")
+              span(style="display:inline; white-space: pre-line; word-break: break-all;")
+                b= product.title
+                if (product.subtitle)
+                  br
+                  i= product.subtitle
+                if (product.desc)
+                  br
+                  | #{product.desc}
+                if (product.remain==-1 || product.remain>0)
+                  if (product.max > 0)
+                    br
+                    | 限量商品：尚餘 #{product.remain} #{product.unit}
+                  if (product.min > 0)
+                    br
+                    | 團購商品：滿 #{product.min} #{product.unit} 才開團
+                    //- 做個血條
+                else
+                  br
+                  b 已售完
+                if (product.src_country)
+                  br
+                  | 產地：#{product.src_country}
+                if (product.src_producer)
+                  br
+                  | 生產者：#{product.src_producer}
+                if (product.brend)
+                  br
+                  | 品牌：#{product.brend}
+                if (product.package_info)
+                  br
+                  | 包裝方式：#{product.package_info}
+                br
+                | 價格：#{product.unit_prize} / #{product.unit}
+                if (product.pickup_method)
+                  br
+                  | 限定取貨方式：#{array2csv(product.pickup_method)}
+                if (product.remain==-1 || product.remain>0)
+                  br
+                  | 預訂&nbsp;
+                  span(id="#{product._id}_score") 0
+                  | &nbsp;#{product.unit}：
+                  if (product.remain == -1 || product.max_per_order < product.remain)
+                    input(type="range", name="#{product._id}", min=0, max="#{product.max_per_order}", value=0, onchange="showScore('#{product._id}', this.value)")
+                  else
+                    input(type="range", name="#{product._id}", min=0, max="#{product.remain}", value=0, onchange="showScore('#{product._id}', this.value)")
+      section#order_data
+        div(class="inner")
+          header
+            h2 訂單資訊
+          //- 訂單資料 先登入可免填
+          if (s2debug)
+            input(type="hidden" name="debug" id="debug" value="debug")
+          div(style="border-width:2px;border-style:solid;border-color:#4286f4;padding:5px;margin:3px;")
+            div(class="field")
+              label(for="nickname") 暱稱（必填）
+              input(type="text" name="nickname" id="nickname")
+            div(class="field")
+              label(for="email") email（必填）
+              input(type="text" name="email" id="email")
+            div(class="field")
+              label(for="cellphone") 手機（必填）
+              input(type="text" name="cellphone" id="cellphone")
+      section#shipping_data
+        div(class="inner")
+          header
+            h2 寄送資訊
+          //- 寄送資訊
+          div(style="border-width:2px;border-style:solid;border-color:#4286f4;padding:5px;margin:3px;")
+            h4 選擇自取者不需填寫寄送資訊
+            div(class="field half first") 
+              label(for="shipping_name") 取貨方式
+              select#style(name='pickup_method')
+                option(value='NA') Please Select
+                //- TODO: reduce pickup method on client
+                for pickup_option in pickup
+                  option(value='#{pickup_option}') #{pickup_option}
+            div(class="field half") 
+              label(for="shipping_name") 寄送：收件人
+              input(type="text" name="shipping_name" id="shipping_name")
+            div(class="field half first") 
+              label(for="shipping_counrty") 寄送：收件國家
+              input(type="text" name="shipping_counrty" id="shipping_counrty")
+            div(class="field half") 
+              label(for="shipping_zip") 寄送：郵遞區號
+              input(type="text" name="shipping_zip" id="shipping_zip")
+            div(class="field half first") 
+              label(for="shipping_address") 寄送：收件地址
+              input(type="text" name="shipping_address" id="shipping_address")
+            div(class="field half") 
+              label(for="shipping_phone") 寄送：收件電話
+              input(type="text" name="shipping_phone" id="shipping_phone")
+            div(class="field")
+              label(for="desc") 註記
+              textarea(name="desc" rows="6") #{desc}
+      section#payment_data
+        div(class="inner")
+          header
+            h2 付款資訊
+          //-付款資訊
+          div(style="border-width:2px;border-style:solid;border-color:#FFAC55;padding:5px;margin:3px;")
+            div(class="field") 
+              label(for="paid_method") 付款方式
+              select#style(name='paid_method')
+                option(value='ATM') 轉帳（請收Email）
+        div(class="inner")
+          ul(class="actions")
+            li
+              input(type="submit" value="→送出" class="alt")

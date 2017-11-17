@@ -1,0 +1,120 @@
+extends layout
+block content
+  script.
+  form(action="/preorders/#{preorder._id}/update" method="post")
+    section#main
+      div(class="inner")
+        header
+          | 建立/修改團購
+        div
+          label 標題
+          input(type="text" name="title" id="title" value="#{ns(preorder.title)}") 
+        div
+          label 副標題
+          input(type="text" name="subtitle" id="subtitle" value="#{ns(preorder.subtitle)}") 
+        div
+          label 簡介（短）
+          input(type="text" name="short_desc" id="short_desc" value="#{ns(preorder.short_desc)}") 
+        div
+          label 簡介
+          textarea(name="desc" id="desc" value="#{ns(preorder.desc)}") 
+        div
+          label tags
+          input(type="text" name="tags" id="tags" value="#{ns(preorder.tags)}") 
+        div
+          label 限定取貨方式(即便商品有其他取貨方式也不會超出這邊的列表，不填則不限制)
+          input(type="text" id="pickup_method" name="pickup_method" value="#{ns(array2csv(preorder.pickup_method))}") 
+        div
+          label 活動開始時間
+          input(type='text' id="datepicker_start" name="start_at" value="#{ns(preorder.start_at)}")
+        div
+          label 活動結束時間
+          input(type="text" id="datepicker_end" name="end_at" value="#{ns(preorder.end_at)}") 
+        div
+          label 預定交付日
+          input(type="text" id="datepicker_shipping_expect_at" name="shipping_expect_at" value="#{ns(preorder.shipping_expect_at)}") 
+        //-
+          image_large, image_small
+    section#order_here
+      div(class="inner")
+        header
+          h2 商品選擇 
+          input(type="button" onclick="duplicate('product_form_org', 'product_zone')" value="新增一樣商品") 
+        div(id="product_zone")
+          for product in products
+            div(id="product_form_exist" style="border-width:2px;border-style:solid;border-color:#4286f4;padding:5px;margin:3px;")
+              input(type="hidden" name="product_exist_id[]" value="#{product._id}") 
+              //- input(type="button" onclick="this.parentElement.removeChild(this)" value="移除這項產品") 
+              div
+                label 商品標題
+                input(type="text" name="product_exist_title[]" value="#{ns(product.title)}") 
+              div
+                label 商品副標題
+                input(type="text" name="product_exist_subtitle[]" value="#{ns(product.subtitle)}") 
+              div
+                label 商品描述（一行）
+                input(type="text" name="product_exist_short_desc[]" value="#{ns(product.short_desc)}") 
+              div
+                label 商品描述
+                textarea(name="product_exist_desc[]" value="#{ns(product.desc)}") 
+              div
+                label 商品照片網址
+                input(type="text" name="product_exist_image_large[]" value="#{ns(product.image_large)}") 
+              div
+                label 銷售單位(包、個、瓶...)
+                input(type="text" name="product_exist_unit[]" value="#{ns(product.unit)}") 
+              div
+                label 單價
+                input(type="text" name="product_exist_unit_prize[]" value="#{ns(product.unit_prize)}") 
+              div
+                label 數量上限
+                input(type="text" name="product_exist_max[]" value="#{ns(product.max)}") 
+              div
+                label 成團最低訂單量
+                input(type="text" name="product_exist_min[]" value="#{ns(product.min)}") 
+              div
+                label 一個人最多可買幾個
+                input(type="text" name="product_exist_max_per_order[]" value="#{ns(product.max_per_order)}") 
+              div
+                label 允許取貨方式（例：明都,宅配）（逗號分格）
+                input(type="text" name="product_exist_pickup_method[]" value="#{ns(array2csv(product.pickup_method))}") 
+          div(id="product_form_org" style="border-width:2px;border-style:solid;border-color:#FFAC55;padding:5px;margin:3px;")
+            //- input(type="button" onclick="this.parentElement.removeChild(this)" value="移除這項產品") 
+            div
+              label 商品標題
+              input(type="text" name="product_title[]") 
+            div
+              label 商品副標題
+              input(type="text" name="product_subtitle[]") 
+            div
+              label 商品描述（一行）
+              input(type="text" name="product_short_desc[]") 
+            div
+              label 商品描述
+              textarea(name="product_desc[]") 
+            div
+              label 商品照片網址
+              input(type="text" name="product_image_large[]") 
+            div
+              label 銷售單位(包、個、瓶...)
+              input(type="text" name="product_unit[]" value="份") 
+            div
+              label 單價
+              input(type="text" name="product_unit_prize[]") 
+            div
+              label 數量上限
+              input(type="text" name="product_max[]") 
+            div
+              label 成團最低訂單量
+              input(type="text" name="product_min[]" value=1) 
+            div
+              label 一個人最多可買幾個
+              input(type="text" name="product_max_per_order[]" value=1) 
+            div
+              label 允許取貨方式（例：明都,宅配）（逗號分格）
+              input(type="text" name="product_pickup_method[]") 
+            //- image_small, rc_country, src_producer, brend, unit_profit, package_info
+        input(type="button" onclick="duplicate('product_form_org', 'product_zone')" value="新增一樣商品") 
+        ul(class="actions")
+          li
+            input(type="submit" value="→送出" class="alt")

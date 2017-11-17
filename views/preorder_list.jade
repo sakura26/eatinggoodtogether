@@ -1,0 +1,32 @@
+extends layout
+block content
+  section#main
+    div(class="inner")
+      header
+        h2 團購一覽
+      for preorder in preorders
+        div(style="border-width:2px;border-style:solid;border-color:#FFAC55;padding:5px;margin:3px;")
+          if (preorder.image_small)
+            a(href="/preorders/#{preorder._id}/view") 
+              img(src="#{preorder.image_small}", style="width:200px; float:left;")
+          else if(preorder.image_small)
+            img(src="#{preorder.image_small}", style="width:200px; float:left;")
+          else
+            img(src="https://static.pexels.com/photos/126407/pexels-photo-126407.jpeg", style="width:200px; float:left;")
+          span(style="display:inline; white-space: pre-line; word-break: break-all;")
+            a(href="/preorders/#{preorder._id}/view")
+              b= preorder.title
+            if (preorder.subtitle)
+              br
+              i= preorder.subtitle
+            br
+            | 活動期間：#{preorder.start_at.Format("yyyy-MM-dd hh:mm")}～#{preorder.end_at.Format("yyyy-MM-dd hh:mm")}
+            if (preorder.tags)
+              br
+              | TAGS: #{array2csv(preorder.tags)}
+            if (preorder.short_desc)
+              br
+              | #{preorder.short_desc}
+            //- if permission
+            br
+            a(href="/preorders/#{preorder._id}/delete") DELETE

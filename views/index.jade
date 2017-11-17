@@ -1,0 +1,23 @@
+extends layout
+block content
+  section(id="banner")
+    div(class="inner")
+      h1 #{defaultLang.siteName}: 
+        span #{defaultLang.siteDescShort}
+      ul(class="actions")
+        li
+          a(href="#create" class="button alt") Get Started
+
+  section(id="preorders")
+    div(class="inner")
+      a(id="create")
+      header
+        h2 目前團購一覽
+      
+
+  section(id="two")
+    div(class="inner")
+      p 這是一個練手的簡單專案，如果有任何問題或錯誤，
+        a(target="_blank" href="http://gc.anotherdream.tw/thread/59173c112283133e07332831/show") 請由此回報
+        | ，或聯繫 ethen at anotherdream dot com。如果您對這個專案有興趣，歡迎
+        a(target="_blank" href="https://github.com/sakura26/eatinggoodtogether") fork or PR
